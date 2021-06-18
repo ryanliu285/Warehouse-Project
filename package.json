@@ -1,0 +1,15 @@
+{
+  "name": "warehouse-project",
+  "version": "1.0.0",
+  "description": "Project for warehouse management",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Ryan Liu",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^13.1.2",
+    "electron-titlebar": "^0.0.3"
+  }
+}
