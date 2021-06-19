@@ -3,7 +3,7 @@
 body {
   margin:0;
   padding:0;
-  background: #98ff98;/*linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);*/
+  background: #96e396;/*linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);*/
   /*background-size: 400% 400%;*/
   position: relative;
   animation: move 60s linear infinite;
@@ -40,12 +40,25 @@ footer{
   position: fixed;
   bottom: 0;
 }
-
-button{
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
-  box-shadow:inset 0px 1px 0px 0px #ffffff;
-	border:1px solid #dcdcdc;
+/*Generated button by bestcssbuttongenerator.com*/
+.myButton {
+	background-color:#ffffff;
+	border-radius:6px;
+	border:1px solid #ffffff;
 	display:inline-block;
 	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:15px 50px;
+	text-decoration:none;
+  color: #96e396;
+  font-weight: bolder;
+}
+.myButton:hover {
+	background-color:#ffffff;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
 }
