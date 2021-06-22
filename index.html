@@ -11,22 +11,38 @@
     <div>
       <h1 class = "center" style = "padding-top:10%; opacity: 0;" id = "welcome">Welcome</h1>
       <h2 class = "center" style = "opacity: 0;" id = "inst">Click an option to get started</h2>
-      <a onclick = "create()" class="myButton" style = "opacity: 0; margin-left: 44%" id = "create">Create Account</a>
+      <div class = "content">
+        <a onclick = "create()" class="myButton" style = "opacity: 0;" id = "create">Create Account</a>
+      </div>
       <br>
       <br>
-      <a onclick = "login()" class="myButton" style = "opacity: 0; margin-left: 45.8%" id = "login">Login</a>
+      <div class = "content">
+        <a onclick = "login()" class="myButton" style = "opacity: 0;" id = "login">Login</a>
+      </div>
     </div>
   </body>
   <footer>
   </footer>
   <script>
-    console.log("Ready");
     fadeIn("welcome", 0);
     fadeIn("inst", 500);
     fadeIn("create", 1000);
     fadeIn("login", 1500);
-    // create() {
-    //   fadeOut("welcome", 0)
-    // }
+
+    function create() {
+      const create = document.getElementById("create");
+      fadeOut("welcome", 0);
+      fadeOut("inst", 150);
+      fadeOut("login", 200);
+      moveUp("create", 750)
+    }
+
+    function login() {
+      const create = document.getElementById("login");
+      fadeOut("welcome", 0);
+      fadeOut("inst", 150);
+      fadeOut("create", 200);
+      moveUp("login", 750)
+    }
   </script>
 </html>
