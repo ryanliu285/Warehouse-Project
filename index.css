@@ -66,3 +66,15 @@ footer{
 	position:relative;
 	top:1px;
 }
+
+label {
+  position: absolute;
+  font-weight: bolder;
+  font-size: 25px;
+  left: 42%;
+}
+
+input {
+  position: absolute;
+  font-weight: 900;
+}

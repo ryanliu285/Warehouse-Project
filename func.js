@@ -37,7 +37,6 @@ function moveUp (elem, delay) {
     element.style.position = "absolute";
 
     for (var i = top; i >= 50; i-=speed) {
-      console.log(i);
       speed = moveUpHelper(i, element, speed, top);
     }
 
@@ -55,4 +54,8 @@ function moveUpHelper (i, element, speed, top) {
   }, 20*count);
   count++;
   return speed/=1.27;
+}
+
+function insertAfter(toInsert, targetNode) {
+    targetNode.parentNode.insertBefore(toInsert,targetNode.nextSibling);
 }

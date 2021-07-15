@@ -7,16 +7,15 @@
     <link rel = "stylesheet" href = "index.css">
   </head>
   <body>
-    <div id="electron-titlebar" class="drag"></div>
     <div>
       <h1 class = "center" style = "padding-top:10%; opacity: 0;" id = "welcome">Welcome</h1>
       <h2 class = "center" style = "opacity: 0;" id = "inst">Click an option to get started</h2>
-      <div class = "content">
+      <div class = "content" id = "createDiv">
         <a onclick = "create()" class="myButton" style = "opacity: 0;" id = "create">Create Account</a>
       </div>
       <br>
       <br>
-      <div class = "content">
+      <div class = "content" id = "loginDiv">
         <a onclick = "login()" class="myButton" style = "opacity: 0;" id = "login">Login</a>
       </div>
     </div>
@@ -34,7 +33,74 @@
       fadeOut("welcome", 0);
       fadeOut("inst", 150);
       fadeOut("login", 200);
-      moveUp("create", 750)
+      moveUp("create", 750);
+      setTimeout(function() {
+        document.getElementById("loginDiv").remove();
+        document.getElementById("welcome").remove();
+        document.getElementById("inst").remove();
+
+        var newInput = document.createElement("input");
+        insertAfter(newInput, document.getElementById("createDiv"));
+        newInput.id = "nameInput";
+        newInput.style.top = document.getElementById("create").offsetTop + 90 +"px";
+        newInput.style.opacity = 0;
+        var newLabel = document.createElement("label");
+        newLabel.id = "nameLabel";
+        newLabel.innerHTML = "Full Name: ";
+        newLabel.for = "nameInput";
+        insertAfter(newLabel, newInput);
+        newLabel.style.top = document.getElementById("create").offsetTop + 90 +"px";
+        newInput.style.left = newLabel.offsetLeft + newLabel.offsetWidth + 10 +"px";
+        newLabel.style.opacity = 0;
+
+        newInput = document.createElement("input");
+        insertAfter(newInput, document.getElementById("createDiv"));
+        newInput.id = "emailInput";
+        newInput.style.top = document.getElementById("create").offsetTop + 90*2 +"px";
+        newInput.style.opacity = 0;
+        newLabel = document.createElement("label");
+        newLabel.id = "emailLabel";
+        newLabel.innerHTML = "Email: ";
+        newLabel.for = "emailInput";
+        insertAfter(newLabel, newInput);
+        newLabel.style.top = document.getElementById("create").offsetTop + 90*2 +"px";
+        newInput.style.left = document.getElementById("nameInput").offsetLeft + "px";
+        newLabel.style.opacity = 0;
+
+        newInput = document.createElement("input");
+        insertAfter(newInput, document.getElementById("createDiv"));
+        newInput.id = "passwordInput";
+        newInput.style.top = document.getElementById("create").offsetTop + 90*3 +"px";
+        newInput.style.opacity = 0;
+        newLabel = document.createElement("label");
+        newLabel.id = "passwordLabel";
+        newLabel.innerHTML = "Password: ";
+        newLabel.for = "passwordInput";
+        insertAfter(newLabel, newInput);
+        newLabel.style.top = document.getElementById("create").offsetTop + 90*3 +"px";
+        newInput.style.left = document.getElementById("nameInput").offsetLeft + "px";
+        newLabel.style.opacity = 0;
+
+        //<a onclick = "create()" class="myButton" style = "opacity: 0;" id = "create">Create Account</a>
+        const newButton = document.createElement("a");
+        newButton.id = "createSubmit";
+        newButton.innerHTML = "Submit";
+        newButton.classList.add("myButton");
+        newButton.onclick = function() {createSubmit()};
+        insertAfter(newButton, newLabel);
+        newButton.style.opacity = 0;
+        newButton.style.position = "absolute";
+        newButton.style.top = document.getElementById("create").offsetTop + 90*4 +"px";
+        newButton.style.left = document.getElementById("create").offsetLeft + "px";
+
+        fadeIn("nameLabel", 0);
+        fadeIn("nameInput", 150);
+        fadeIn("emailLabel", 300);
+        fadeIn("emailInput", 450);
+        fadeIn("passwordLabel", 600);
+        fadeIn("passwordInput", 750);
+        fadeIn("createSubmit", 900);
+      }, 1200);
     }
 
     function login() {
@@ -43,6 +109,61 @@
       fadeOut("inst", 150);
       fadeOut("create", 200);
       moveUp("login", 750)
+      setTimeout(function() {
+        document.getElementById("createDiv").remove();
+        document.getElementById("welcome").remove();
+        document.getElementById("inst").remove();
+
+        var newInput = document.createElement("input");
+        insertAfter(newInput, document.getElementById("loginDiv"));
+        newInput.id = "nameInput";
+        newInput.style.top = document.getElementById("login").offsetTop + 90 +"px";
+        newInput.style.opacity = 0;
+        var newLabel = document.createElement("label");
+        newLabel.id = "nameLabel";
+        newLabel.innerHTML = "Email: ";
+        newLabel.for = "nameInput";
+        insertAfter(newLabel, newInput);
+        newLabel.style.top = document.getElementById("login").offsetTop + 90 +"px";
+        newInput.style.left = newLabel.offsetLeft + newLabel.offsetWidth + 90 +"px";
+        newLabel.style.opacity = 0;
+
+        newInput = document.createElement("input");
+        insertAfter(newInput, document.getElementById("loginDiv"));
+        newInput.id = "emailInput";
+        newInput.style.top = document.getElementById("login").offsetTop + 90*2 +"px";
+        newInput.style.opacity = 0;
+        newLabel = document.createElement("label");
+        newLabel.id = "emailLabel";
+        newLabel.innerHTML = "Password: ";
+        newLabel.for = "emailInput";
+        insertAfter(newLabel, newInput);
+        newLabel.style.top = document.getElementById("login").offsetTop + 90*2 +"px";
+        newInput.style.left = document.getElementById("nameInput").offsetLeft + "px";
+        newLabel.style.opacity = 0;
+
+        //<a onclick = "create()" class="myButton" style = "opacity: 0;" id = "create">Create Account</a>
+        const newButton = document.createElement("a");
+        newButton.id = "createSubmit";
+        newButton.innerHTML = "Submit";
+        newButton.classList.add("myButton");
+        newButton.onclick = function() {createSubmit()};
+        insertAfter(newButton, newLabel);
+        newButton.style.opacity = 0;
+        newButton.style.position = "absolute";
+        newButton.style.top = document.getElementById("login").offsetTop + 90*3 +"px";
+        newButton.style.left = document.getElementById("login").offsetLeft + "px";
+
+        fadeIn("nameLabel", 0);
+        fadeIn("nameInput", 150);
+        fadeIn("emailLabel", 300);
+        fadeIn("emailInput", 450);
+        fadeIn("createSubmit", 600);
+      }, 1200);
+    }
+
+    function createSubmit() {
+
     }
   </script>
 </html>
