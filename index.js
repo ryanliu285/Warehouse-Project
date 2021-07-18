@@ -6,16 +6,17 @@ function createWindow () {
   // Create the browser window.
   let win = new BrowserWindow({
     //frame: false,
-    height: height,
-    width: width,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false,
     }
   })
 
   win.setMenu(null)
 
   win.loadFile('index.html')
+
+  win.maximize()
 
   win.webContents.openDevTools()
 

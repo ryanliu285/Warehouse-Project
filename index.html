@@ -74,6 +74,7 @@
         newInput.style.opacity = 0;
         newLabel = document.createElement("label");
         newLabel.id = "passwordLabel";
+        newLabel.type = "password";
         newLabel.innerHTML = "Password: ";
         newLabel.for = "passwordInput";
         insertAfter(newLabel, newInput);
@@ -164,6 +165,43 @@
 
     function createSubmit() {
 
+      //checkSubmission();
+
+      var mysql = require('mysql');
+      var user = "";
+      var pass = "";
+
+      var lineReader = require('readline').createInterface({
+        input: require('fs').createReadStream('server-credentials.txt')
+      });
+
+      var x = 0;
+      lineReader.on('line', function (line) {
+        console.log(line);
+        if (x == 0) {
+          user = line;
+          x++;
+        } else {
+          pass += line;
+        }
+      });
+      setTimeout(function(){
+        var conn = mysql.createConnection({
+          host: "DESKTOP-G951QGH",
+          port: "3306",
+          user: user,
+          password: pass,
+          database: "warehouse_proj",
+        });
+        conn.connect(function(err) {
+          if (err) throw err;
+          console.log("Connected");
+          conn.query("INSERT INTO account_info VALUES ('" + nameInput.value + "', '" + emailInput.value + "', '" + passwordInput.value +"');", function (err, result) {
+            if (err) throw err;
+            console.log("Result: " + result);
+          });
+        });
+      }, 100);
     }
   </script>
 </html>
