@@ -94,6 +94,15 @@
         newButton.style.top = document.getElementById("create").offsetTop + 90*4 +"px";
         newButton.style.left = document.getElementById("create").offsetLeft + "px";
 
+        const errorMsg = document.createElement("h2");
+        errorMsg.id = "error";
+        errorMsg.innerHTML = "";
+        errorMsg.style.color = "red";
+        insertAfter(errorMsg, newButton);
+        errorMsg.style.position = "absolute";
+        errorMsg.style.top = document.getElementById("create").offsetTop + 90*5 +"px";
+        errorMsg.style.left = document.getElementById("create").offsetLeft + "px";
+
         fadeIn("nameLabel", 0);
         fadeIn("nameInput", 150);
         fadeIn("emailLabel", 300);
@@ -155,6 +164,15 @@
         newButton.style.top = document.getElementById("login").offsetTop + 90*3 +"px";
         newButton.style.left = document.getElementById("login").offsetLeft + "px";
 
+        const errorMsg = document.createElement("h2");
+        errorMsg.id = "error";
+        errorMsg.innerHTML = "";
+        errorMsg.style.color = "red";
+        insertAfter(errorMsg, newButton);
+        errorMsg.style.position = "absolute";
+        errorMsg.style.top = document.getElementById("login").offsetTop + 90*4 +"px";
+        errorMsg.style.left = document.getElementById("login").offsetLeft + "px";
+
         fadeIn("nameLabel", 0);
         fadeIn("nameInput", 150);
         fadeIn("emailLabel", 300);
@@ -165,11 +183,16 @@
 
     function createSubmit() {
 
-      //checkSubmission();
+      const errorMsg = document.getElementById("error");
+      var res = checkSubmission();
+      if (res != "") {
+        errorMsg.innerHTML = res;
+        return;
+      }
 
       var mysql = require('mysql');
-      var user = "";
-      var pass = "";
+      var user;
+      var pass;
 
       var lineReader = require('readline').createInterface({
         input: require('fs').createReadStream('server-credentials.txt')
@@ -182,10 +205,12 @@
           user = line;
           x++;
         } else {
-          pass += line;
+          pass = line;
         }
       });
+
       setTimeout(function(){
+
         var conn = mysql.createConnection({
           host: "DESKTOP-G951QGH",
           port: "3306",
@@ -193,15 +218,44 @@
           password: pass,
           database: "warehouse_proj",
         });
+
         conn.connect(function(err) {
-          if (err) throw err;
+          if (err) {
+            errorMsg.innerHTML = err;
+            throw err;
+          }
           console.log("Connected");
           conn.query("INSERT INTO account_info VALUES ('" + nameInput.value + "', '" + emailInput.value + "', '" + passwordInput.value +"');", function (err, result) {
-            if (err) throw err;
+            if (err) {
+              errorMsg.innerHTML = err;
+              throw err;
+            }
             console.log("Result: " + result);
           });
         });
+
       }, 100);
+
+      errorMsg.innerHTML = "Account created!";
+      errorMsg.style.color = "white";
+      document.getElementById("createSubmit").onclick = "";
+      setTimeout(function(){
+        location.reload();
+      }, 3000);
+
+    }
+
+    function checkSubmission() {
+      const email = document.getElementById("emailInput").value;
+      const password = document.getElementById("passwordInput").value;
+      const re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+      if (!re.test(email)) {
+        return "Email has wrong format!";
+      } else if (password.length < 6) {
+        return "Password not long enough!";
+      }
+
+      return "";
     }
   </script>
 </html>
