@@ -157,7 +157,7 @@
         newButton.id = "createSubmit";
         newButton.innerHTML = "Submit";
         newButton.classList.add("myButton");
-        newButton.onclick = function() {createSubmit()};
+        newButton.onclick = function() {loginCheck()};
         insertAfter(newButton, newLabel);
         newButton.style.opacity = 0;
         newButton.style.position = "absolute";
@@ -256,6 +256,76 @@
       }
 
       return "";
+    }
+
+    function loginCheck() {
+
+      const errorMsg = document.getElementById("error");
+      const email = document.getElementById("nameInput");
+      var password = document.getElementById("emailInput");
+
+      var mysql = require('mysql');
+      var user;
+      var pass;
+
+      var lineReader = require('readline').createInterface({
+        input: require('fs').createReadStream('server-credentials.txt')
+      });
+
+      var x = 0;
+      lineReader.on('line', function (line) {
+        if (x == 0) {
+          user = line;
+          x++;
+        } else {
+          pass = line;
+        }
+      });
+
+
+      errorMsg.innerHTML = "Logging in...";
+      errorMsg.style.color = "white";
+
+      setTimeout(function(){
+
+        var conn = mysql.createConnection({
+          host: "DESKTOP-G951QGH",
+          port: "3306",
+          user: user,
+          password: pass,
+          //database: "warehouse_proj",
+        });
+
+        conn.connect(function(err) {
+          if (err) {
+            errorMsg.innerHTML = err;
+            throw err;
+          }
+          console.log("Connected");
+          conn.query("SELECT password FROM warehouse_proj.account_info WHERE email = \"" + email.value + "\";", function (err, result) {
+            if (err) {
+              errorMsg.innerHTML = err;
+              throw err;
+            }
+            console.log(result)
+            if (result.length == 0) {
+              errorMsg.style.color = "red";
+              errorMsg.innerHTML = "Wrong Email!";
+            } else if (result[0].password != password.value) {
+              console.log(result[0].password);
+              errorMsg.style.color = "red";
+              errorMsg.innerHTML = "Wrong Password!";
+            } else {
+              errorMsg.innerHTML = "Success!";
+              document.getElementById("createSubmit").onclick = "";
+              setTimeout(function(){
+                location.assign("./dashboard.html");
+              }, 3000);
+            }
+          });
+        });
+
+      }, 100);
     }
   </script>
 </html>
