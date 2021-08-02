@@ -200,7 +200,6 @@
 
       var x = 0;
       lineReader.on('line', function (line) {
-        console.log(line);
         if (x == 0) {
           user = line;
           x++;
@@ -224,25 +223,30 @@
             errorMsg.innerHTML = err;
             throw err;
           }
-          console.log("Connected");
-          conn.query("INSERT INTO account_info VALUES ('" + nameInput.value + "', '" + emailInput.value + "', '" + passwordInput.value +"');", function (err, result) {
+          conn.query("SELECT * FROM warehouse_proj.account_info WHERE email = \"" + emailInput.value + "\";", function (err, result) {
             if (err) {
               errorMsg.innerHTML = err;
               throw err;
+            } else if (result.length != 0) {
+              errorMsg.innerHTML = "Email Taken!";
+            } else {
+              conn.query("INSERT INTO account_info VALUES ('" + nameInput.value + "', '" + emailInput.value + "', '" + passwordInput.value +"');", function (err, result) {
+                if (err) {
+                  errorMsg.innerHTML = err;
+                  throw err;
+                }
+                errorMsg.innerHTML = "Account created!";
+                errorMsg.style.color = "white";
+                document.getElementById("createSubmit").onclick = "";
+                setTimeout(function(){
+                  location.reload();
+                }, 3000);
+              });
             }
-            console.log("Result: " + result);
           });
         });
 
       }, 100);
-
-      errorMsg.innerHTML = "Account created!";
-      errorMsg.style.color = "white";
-      document.getElementById("createSubmit").onclick = "";
-      setTimeout(function(){
-        location.reload();
-      }, 3000);
-
     }
 
     function checkSubmission() {
@@ -301,18 +305,15 @@
             errorMsg.innerHTML = err;
             throw err;
           }
-          console.log("Connected");
           conn.query("SELECT password FROM warehouse_proj.account_info WHERE email = \"" + email.value + "\";", function (err, result) {
             if (err) {
               errorMsg.innerHTML = err;
               throw err;
             }
-            console.log(result)
             if (result.length == 0) {
               errorMsg.style.color = "red";
               errorMsg.innerHTML = "Wrong Email!";
             } else if (result[0].password != password.value) {
-              console.log(result[0].password);
               errorMsg.style.color = "red";
               errorMsg.innerHTML = "Wrong Password!";
             } else {
