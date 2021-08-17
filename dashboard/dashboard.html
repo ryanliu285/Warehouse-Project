@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Placeholder Name</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src = "../func.js"></script>
+    <link rel = "stylesheet" href = "dashboard.css">
+  </head>
+  <body>
+    <div style = "height:90%; overflow-y:auto;">
+      &nbsp;
+      <input id = "search" placeholder = "Search by container number"></input>
+      <button id = "searchButton" onclick = "fill()">Search</button>
+      <button id = "refreshButton" onclick = "fill()">Refresh</button>
+      <button id = "addButton" onclick = "addForm()">Add</button>
+      <table id = "table" style="width:100%; font-weight:bold; text-align: left;">
+        <tr id = "title">
+          <th id = "date">Date ▼</th> <!--onclick = "change('Item')"-->
+          <th id = "contNum" onclick = "change('mapEx')">Container #</th>
+          <th id = "trucker" onclick = "change('mapC')">Trucker Name</th>
+          <th id = "truckerEmail">Trucker Email</th> <!-- onclick = "change('Confidence Level')"-->
+          <th id = "dock" onclick = "change('cardEx')">Dock</th>
+          <th id = "buyerEmail" onclick = "change('cardC')">Buyer Email</th>
+          <th id = "status" onclick = "change('cardC')">Status</th>
+          <th id = "delete">     </th>
+        </tr>
+      </table>
+    </div>
+    <script>
+      var last;
+      function fill() {
+        var search = document.getElementById("search").value;
+        var x = 0;
+
+        var lineReader = require('readline').createInterface({
+          input: require('fs').createReadStream('../server-credentials.txt')
+        });
+
+        lineReader.on('line', function (line) {
+          if (x == 0) {
+            user = line;
+            x++;
+          } else {
+            pass = line;
+          }
+        });
+
+        var conn = mysql.createConnection({
+          host: "DESKTOP-G951QGH",
+          port: "3306",
+          user: user,
+          password: pass,
+          database: "warehouse_proj",
+        });
+        conn.connect(function(err) {
+          if (err) {
+            throw err;
+          }
+          conn.query("SELECT * FROM warehouse_info", function(err, result) {
+            if (last != result) {
+              updateTable();
+            }
+            last = result;
+          });
+        });
+      }
+
+      function updateTable() {
+        var row = table.insertRow(rows);
+        var date = row.insertCell(0);
+        var contNum = row.insertCell(1);
+        var trucker = row.insertCell(2);
+        var truckerEmail = row.insertCell(3);
+        var dock = row.insertCell(4);
+        var buyerEmail = row.insertCell(5);
+        var status= row.insertCell(6);
+        var del = row.insertCell(7);
+
+        
+      }
+
+      function addForm() {
+        var overlay = document.createElement("div");
+        overlay.id = "overlay";
+        insertAfter(overlay, document.getElementById("table"));
+        addInputLabel("contNumber", "Container Number:", overlay);
+        addInputLabel("trucker", "Trucker:", overlay);
+        addInputLabel("truckerEmail", "Trucker Email:", overlay);
+        addInputLabel("dock", "Dock:", overlay);
+        addInputLabel("buyerEmail", "Buyer Email:", overlay);
+        var statusLabel = document.createElement("label");
+        statusLabel.id = "statusLabel";
+        statusLabel.innerHTML = "Status:"
+        var statusSelect = document.createElement("select");
+        statusSelect.id = "statusInput";
+        overlay.appendChild(statusLabel);
+        overlay.appendChild(statusSelect);
+        var temp = document.createElement("option");
+        temp.value = "In";
+        temp.innerHTML = "In";
+        statusSelect.appendChild(temp);
+        temp = document.createElement("option");
+        temp.value = "Out";
+        temp.innerHTML = "Out";
+        statusSelect.appendChild(temp);
+        temp = document.createElement("option");
+        temp.value = "Empty";
+        temp.innerHTML = "Empty";
+        statusSelect.appendChild(temp);
+        var addButton = document.createElement("button");
+        addButton.id = "addButton";
+        addButton.onclick = function() {addRow()};
+        addButton.innerHTML = "Add";
+        overlay.appendChild(document.createElement('br'));
+        overlay.appendChild(addButton);
+        const errorMsg = document.createElement('h2');
+        errorMsg.style.color = "red";
+        errorMsg.id = "error";
+        overlay.appendChild(errorMsg);
+      }
+
+      function addInputLabel(name, label, overlay) {
+        var newInput = document.createElement("input");
+        newInput.id = name + "Input";
+        var newLabel = document.createElement("label");
+        newLabel.id = name + "Label";
+        newLabel.innerHTML = label;
+        newLabel.for = name + "Input";
+        overlay.appendChild(newLabel);
+        overlay.appendChild(newInput);
+        overlay.appendChild(document.createElement('br'));
+      }
+
+      function addRow() {
+        document.getElementById("addButton").onclick = null;
+        var contNumber = document.getElementById("contNumberInput").value;
+        var trucker = document.getElementById("truckerInput").value;
+        var truckerEmail = document.getElementById("truckerEmailInput").value;
+        var dock = document.getElementById("dockInput").value;
+        var buyerEmail = document.getElementById("buyerEmailInput").value;
+        var status = document.getElementById("statusInput").value;
+
+        const errorMsg = document.getElementById("error");
+
+        var mysql = require('mysql');
+        var user;
+        var pass;
+
+        var lineReader = require('readline').createInterface({
+          input: require('fs').createReadStream('server-credentials.txt')
+        });
+
+        var x = 0;
+        lineReader.on('line', function (line) {
+          if (x == 0) {
+            user = line;
+            x++;
+          } else {
+            pass = line;
+          }
+        });
+
+        setTimeout(function(){
+
+          var conn = mysql.createConnection({
+            host: "DESKTOP-G951QGH",
+            port: "3306",
+            user: user,
+            password: pass,
+            database: "warehouse_proj",
+          });
+
+          conn.connect(function(err) {
+            if (err) {
+              errorMsg.innerHTML = err;
+              document.getElementById("addButton").onclick = function() {addRow()};
+              throw err;
+            }
+            conn.query("SELECT * FROM warehouse_info WHERE container = \"" + contNumber + "\";", function (err, result) {
+              if (err) {
+                errorMsg.innerHTML = err;
+                document.getElementById("addButton").onclick = function() {addRow()};
+                throw err;
+              } else if (result.length != 0) {
+                errorMsg.innerHTML = "Container Number Exists Already!";
+                document.getElementById("addButton").onclick = function() {addRow()};
+              } else {
+                conn.query("INSERT INTO warehouse_info VALUES ('" + new Date().toLocaleString() + "', '" + contNumber + "', '" + trucker + "', '" + truckerEmail +"', '" + dock + "','" + buyerEmail + "', '" + status + "');", function (err, result) {
+                  if (err) {
+                    errorMsg.innerHTML = err;
+                    throw err;
+                  }
+                  errorMsg.innerHTML = "Container added!";
+                  errorMsg.style.color = "white";
+                  document.getElementById("addButton").onclick = "";
+                  setTimeout(function(){
+                    location.reload();
+                  }, 3000);
+                });
+              }
+            });
+          });
+
+        }, 100);
+      }
+
+      setInterval(fill(), 1000);
+    </script>
+  </body>
+</html>
