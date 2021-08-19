@@ -27,56 +27,79 @@
       </table>
     </div>
     <script>
+      var disable = false;
+      var colArr = [];
       var last;
+      var mysql = require('mysql');
+      var user;
+      var pass;
+
+      var lineReader = require('readline').createInterface({
+        input: require('fs').createReadStream('server-credentials.txt')
+      });
+
+      var x = 0;
+      lineReader.on('line', function (line) {
+        if (x == 0) {
+          user = line;
+          x++;
+        } else {
+          pass = line;
+        }
+      });
+
       function fill() {
+        if (disable) {
+          return;
+        }
         var search = document.getElementById("search").value;
-        var x = 0;
-
-        var lineReader = require('readline').createInterface({
-          input: require('fs').createReadStream('../server-credentials.txt')
-        });
-
-        lineReader.on('line', function (line) {
-          if (x == 0) {
-            user = line;
-            x++;
-          } else {
-            pass = line;
-          }
-        });
-
-        var conn = mysql.createConnection({
-          host: "DESKTOP-G951QGH",
-          port: "3306",
-          user: user,
-          password: pass,
-          database: "warehouse_proj",
-        });
-        conn.connect(function(err) {
-          if (err) {
-            throw err;
-          }
-          conn.query("SELECT * FROM warehouse_info", function(err, result) {
-            if (last != result) {
-              updateTable();
-            }
-            last = result;
+        setTimeout(function(){
+          var conn = mysql.createConnection({
+            host: "DESKTOP-G951QGH",
+            port: "3306",
+            user: user,
+            password: pass,
           });
-        });
+          conn.connect(function(err) {
+            if (err) {
+              throw err;
+            }
+            conn.query("SELECT * FROM warehouse_proj.warehouse_info ORDER BY date ASC", function(err, result) {
+              if (last != result) {
+                colArr = [];
+                last = result;
+                for (var elem in last[0]) {
+                  colArr.push(elem);
+                }
+                updateTable();
+              }
+              console.log(result);
+            });
+          });
+          conn.end();
+        }, 100);
       }
 
       function updateTable() {
-        var row = table.insertRow(rows);
-        var date = row.insertCell(0);
-        var contNum = row.insertCell(1);
-        var trucker = row.insertCell(2);
-        var truckerEmail = row.insertCell(3);
-        var dock = row.insertCell(4);
-        var buyerEmail = row.insertCell(5);
-        var status= row.insertCell(6);
-        var del = row.insertCell(7);
-
-        
+        clearTable();
+        for (var i = 1; i < last.length + 1; i++) {
+          var row = table.insertRow(i);
+          /*var date = row.insertCell(0);
+          var contNum = row.insertCell(1);
+          var trucker = row.insertCell(2);
+          var truckerEmail = row.insertCell(3);
+          var dock = row.insertCell(4);
+          var buyerEmail = row.insertCell(5);
+          var status= row.insertCell(6);
+          var del = row.insertCell(7);*/
+          var count = 0;
+          for (var j = 0; j < colArr.length; j++) {
+            var tempRow = row.insertCell(count);
+            tempRow.innerHTML = last[i - 1][colArr[j]];
+            count++;
+          }
+          row.style = "background-color:rgba(255, 255, 255, 0.2);"
+        }
       }
 
       function addForm() {
@@ -142,23 +165,7 @@
 
         const errorMsg = document.getElementById("error");
 
-        var mysql = require('mysql');
-        var user;
-        var pass;
 
-        var lineReader = require('readline').createInterface({
-          input: require('fs').createReadStream('server-credentials.txt')
-        });
-
-        var x = 0;
-        lineReader.on('line', function (line) {
-          if (x == 0) {
-            user = line;
-            x++;
-          } else {
-            pass = line;
-          }
-        });
 
         setTimeout(function(){
 
@@ -200,11 +207,19 @@
               }
             });
           });
-
+          conn.end();
         }, 100);
       }
 
-      setInterval(fill(), 1000);
+      function clearTable() {
+        var table = document.getElementById("table");
+        var length =  table.rows.length;
+        for (i = 1; i < length; i++){
+          table.deleteRow(-1)
+        }
+      }
+
+      setInterval(fill, 1000);
     </script>
   </body>
 </html>
