@@ -71,12 +71,12 @@
                 for (var elem in last[0]) {
                   colArr.push(elem);
                 }
+                conn.end();
                 updateTable();
               }
               console.log(result);
             });
           });
-          conn.end();
         }, 100);
       }
 
@@ -202,12 +202,11 @@
                   document.getElementById("addButton").onclick = "";
                   setTimeout(function(){
                     location.reload();
-                  }, 3000);
+                  }, 500);
                 });
               }
             });
           });
-          conn.end();
         }, 100);
       }
 
