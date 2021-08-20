@@ -33,6 +33,8 @@
       var mysql = require('mysql');
       var user;
       var pass;
+      var emailUser;
+      var emailPass;
 
       var lineReader = require('readline').createInterface({
         input: require('fs').createReadStream('server-credentials.txt')
@@ -43,8 +45,15 @@
         if (x == 0) {
           user = line;
           x++;
-        } else {
+        } else if (x == 1){
           pass = line;
+          x++;
+        } else if (x == 2){
+          emailUser = line;
+          x++;
+        } else{
+          emailPass = line;
+          x++;
         }
       });
 
@@ -98,7 +107,7 @@
             tempRow.innerHTML = last[i - 1][colArr[j]];
             count++;
           }
-          row.style = "background-color:rgba(255, 255, 255, 0.2);"
+          row.style = "background-color:rgba(255, 255, 255, 0.5);"
         }
       }
 
@@ -154,7 +163,7 @@
         overlay.appendChild(document.createElement('br'));
       }
 
-      function addRow() {
+      async function addRow() {
         document.getElementById("addButton").onclick = null;
         var contNumber = document.getElementById("contNumberInput").value;
         var trucker = document.getElementById("truckerInput").value;
@@ -162,6 +171,8 @@
         var dock = document.getElementById("dockInput").value;
         var buyerEmail = document.getElementById("buyerEmailInput").value;
         var status = document.getElementById("statusInput").value;
+        var sendTo = [truckerEmail, buyerEmail];
+        var date = new Date().toLocaleString();
 
         const errorMsg = document.getElementById("error");
 
@@ -192,7 +203,7 @@
                 errorMsg.innerHTML = "Container Number Exists Already!";
                 document.getElementById("addButton").onclick = function() {addRow()};
               } else {
-                conn.query("INSERT INTO warehouse_info VALUES ('" + new Date().toLocaleString() + "', '" + contNumber + "', '" + trucker + "', '" + truckerEmail +"', '" + dock + "','" + buyerEmail + "', '" + status + "');", function (err, result) {
+                conn.query("INSERT INTO warehouse_info VALUES ('" + date + "', '" + contNumber + "', '" + trucker + "', '" + truckerEmail +"', '" + dock + "','" + buyerEmail + "', '" + status + "');", function (err, result) {
                   if (err) {
                     errorMsg.innerHTML = err;
                     throw err;
@@ -200,14 +211,42 @@
                   errorMsg.innerHTML = "Container added!";
                   errorMsg.style.color = "white";
                   document.getElementById("addButton").onclick = "";
-                  setTimeout(function(){
-                    location.reload();
-                  }, 500);
+                  email(contNumber, status, date, buyerEmail, truckerEmail, dock);
+                  document.getElementById("overlay").remove();
                 });
               }
             });
           });
         }, 100);
+      }
+
+      async function email(contNumber, status, date, buyerEmail, truckerEmail, dock) {
+        const nodemailer = require("nodemailer");
+
+        // create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+          service: "Gmail",
+          auth: {
+            user: emailUser, // generated ethereal user
+            pass: emailPass, // generated ethereal password
+          },
+        });
+
+        // send mail with defined transport object
+        let info = await transporter.sendMail({
+          from: '"Warehouse Notification" <warehouseProj16@gmail.com>', // sender address
+          to: buyerEmail + ", " + truckerEmail, // list of receivers
+          subject: "Shipment Notification", // Subject line
+          text: "Shipping container " + contNumber + " is now " + status +" as of " + date + " at dock " + dock, // plain text body
+          html: "<b>Shipping container " + contNumber + " is now " + status +" as of " + date+ " at dock " + dock +"</b>", // html body
+        });
+
+        console.log("Message sent: %s", info.messageId);
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+        // Preview only available when sending through an Ethereal account
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        document.getElementById("addButton").onclick = "addForm()";
       }
 
       function clearTable() {
